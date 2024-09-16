@@ -1,1 +1,22 @@
-Hello World
+InfluxDB Credentials
+
+Operator API
+h_DvpQil1JsseduYL52j5ywa2UgKt3w2G4AJzD-I3ueMFebeNptCrYihj_KGmEqBQ5O3p9NDq0hGXFRiC28bhQ==
+
+Username
+admin
+
+Password
+admin123
+
+Initial Organization Name
+Ample Tech
+
+Initial Bucket Name
+Testorch
+
+GitHub Personal Access Token
+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
+
+GitHub API Test Plans
+https://api.github.com/repos/AshleyPojol/testplans/contents/
