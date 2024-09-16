@@ -3,7 +3,7 @@ import axios from 'axios';
 // Function to fetch test plans from a GitHub repository
 export async function getTestPlans() {
   // Replace with your actual GitHub repository details
-  const repoUrl = 'https://api.github.com/repos/AshleyPojol/testplans/contents/';  
+  const repoUrl = 'https://api.github.com/repos/AshleyPojol/testorch-testplan/contents/';  
   const githubToken = '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';  // Add your GitHub token if the repo is private
 
   try {
