@@ -1,40 +1,89 @@
+import inquirer from 'inquirer';
 import { promptUser } from './promptUser.js';
-import { createOrganization, createBucket, createTokenForOrg, writeDataToNewOrg } from './influxdb.js';
-
+import { createOrganization, createBucket, createTokenForOrg, writeDataToNewOrg, writeDataToInfluxDB } from './influxdb.js';
+import { createGrafanaDashboard, updateGrafanaOrgVariable } from './grafana.js';  // Import Grafana function
 
 async function runTestorch() {
-  // Step 1: Prompt the user for test plan, organization, bucket, token, and dashboard info
   const userInput = await promptUser();
-  console.log("User Input: ", userInput);
 
-  // Step 2: Create the organization based on user input
-  const org = await createOrganization(userInput.organizationName);
-  if (!org || !org.id) {
-    console.error('Failed to create organization.');
-    return;
+  let orgID;
+  let bucketID;
+  let token;
+
+  if (userInput.apiURL) {
+    // Use existing setup
+    orgID = userInput.organizationName;
+    bucketID = userInput.bucketName;
+
+    token = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'token',
+        message: 'Enter your existing token or leave blank to generate a new one:',
+        default: ''
+      }
+    ]);
+
+    if (!token.token) {
+      console.log('Generating a new token...');
+      token = await createTokenForOrg(orgID, bucketID, 'Generated Token');
+    } else {
+      token = token.token;
+    }
+
+    console.log(`Using existing setup: Org: ${orgID}, Bucket: ${bucketID}, Token: ${token}`);
+  } else {
+    // Create new organization and bucket
+    const org = await createOrganization(userInput.organizationName);
+    orgID = org.id;
+
+    const bucket = await createBucket(orgID, userInput.bucketName);
+    bucketID = bucket.id;
+
+    token = await createTokenForOrg(orgID, bucketID, userInput.tokenDescription);
+    console.log(`Auto Generated Token: ${token}`);
   }
-  const orgID = org.id;
-  console.log(`Organization created with ID: ${orgID}`);
 
-  // Step 3: Create a bucket based on user input
-  const bucket = await createBucket(orgID, userInput.bucketName);
-  if (!bucket || !bucket.id) {
-    console.error('Failed to create bucket.');
-    return;
+  // Write data to InfluxDB
+  await writeDataToInfluxDB(userInput.testPlan, orgID, bucketID, token);
+
+  // Ask user about creating Grafana dashboard
+  const { createDashboard } = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'createDashboard',
+      message: 'Would you like to create a Grafana dashboard for this data?',
+      default: true
+    }
+  ]);
+
+  if (createDashboard) {
+    let { uid, url } = await createGrafanaDashboard(userInput.organizationName, userInput.bucketName, userInput.testPlan);
+
+    if (!uid) {
+      const { overwrite } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'overwrite',
+          message: 'Dashboard already exists. Do you want to overwrite it?',
+          default: false
+        }
+      ]);
+
+      if (overwrite) {
+        const result = await createGrafanaDashboard(userInput.organizationName, userInput.bucketName, userInput.testPlan, uid, true);
+        uid = result.uid;
+        url = result.url;
+        console.log(`Dashboard overwritten: ${url}`);
+      } else {
+        console.log('Dashboard creation skipped.');
+      }
+    } else {
+      console.log(`Dashboard created at ${url}`);
+      // Update Grafana with organization name
+      await updateGrafanaOrgVariable(uid, userInput.organizationName);
+    }
   }
-  const bucketID = bucket.id;
-  console.log(`Bucket created with ID: ${bucketID}`);
-
-  // Step 4: Generate a token for the new organization and bucket
-  const token = await createTokenForOrg(orgID, bucketID, userInput.tokenDescription);
-  if (!token) {
-    console.error('Failed to create token.');
-    return;
-  }
-  console.log(`Auto Generated Token: ${token} \nBe sure to save it.`);
-
-  // Step 5: Write data to InfluxDB using the generated token
-  await writeDataToNewOrg(userInput.testPlan, userInput.organizationName, userInput.bucketName, token);
 }
 
 runTestorch();
