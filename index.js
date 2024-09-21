@@ -1,7 +1,8 @@
 import inquirer from 'inquirer';
 import { promptUser } from './promptUser.js';
-import { createOrganization, createBucket, createTokenForOrg, writeDataToNewOrg, writeDataToInfluxDB } from './influxdb.js';
-import { createGrafanaDashboard, updateGrafanaOrgVariable } from './grafana.js';  // Import Grafana function
+import { createOrganization, createBucket, createTokenForOrg, writeDataToInfluxDB } from './influxdb.js';
+import { createGrafanaDashboard, updateGrafanaOrgVariable } from './grafana.js';  
+import { deployJmeterMaster, deployJmeterSlaves, ensureNamespaceExists } from './kubernetes.js';
 
 async function runTestorch() {
   const userInput = await promptUser();
@@ -11,7 +12,6 @@ async function runTestorch() {
   let token;
 
   if (userInput.apiURL) {
-    // Use existing setup
     orgID = userInput.organizationName;
     bucketID = userInput.bucketName;
 
@@ -33,7 +33,6 @@ async function runTestorch() {
 
     console.log(`Using existing setup: Org: ${orgID}, Bucket: ${bucketID}, Token: ${token}`);
   } else {
-    // Create new organization and bucket
     const org = await createOrganization(userInput.organizationName);
     orgID = org.id;
 
@@ -44,10 +43,32 @@ async function runTestorch() {
     console.log(`Auto Generated Token: ${token}`);
   }
 
-  // Write data to InfluxDB
   await writeDataToInfluxDB(userInput.testPlan, orgID, bucketID, token);
 
-  // Ask user about creating Grafana dashboard
+  console.log('Deploying Kubernetes Namespaces and JMeter cluster...');
+
+  const deployK8s = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'deployK8s',
+      message: 'Would you like to deploy the JMeter Master and Slaves to Kubernetes?',
+      default: true
+    }
+  ]);
+
+  if (deployK8s.deployK8s) {
+    // Ensure the namespaces exist
+    await ensureNamespaceExists('perf-platform');  
+    await ensureNamespaceExists('monitoring');    
+
+    // Deploy JMeter Master and Slaves
+    const jmeterMasterDeployment = await deployJmeterMaster(userInput.testPlan, userInput.organizationName);
+    console.log(`JMeter Master deployed: ${jmeterMasterDeployment.status}`);
+
+    const jmeterSlaveDeployment = await deployJmeterSlaves(userInput.testPlan, userInput.organizationName);
+    console.log(`JMeter Slaves deployed: ${jmeterSlaveDeployment.status}`);
+  }
+
   const { createDashboard } = await inquirer.prompt([
     {
       type: 'confirm',
@@ -80,10 +101,11 @@ async function runTestorch() {
       }
     } else {
       console.log(`Dashboard created at ${url}`);
-      // Update Grafana with organization name
       await updateGrafanaOrgVariable(uid, userInput.organizationName);
     }
   }
+
+  console.log('Testorch execution completed successfully.');
 }
 
 runTestorch();

@@ -2,8 +2,8 @@ import axios from 'axios';
 import { InfluxDB, Point } from '@influxdata/influxdb-client';
 
 // InfluxDB connection details
-const influxUrl = 'http://localhost:8086';  // Base InfluxDB URL (Docker setup)
-const adminToken = 'h_DvpQil1JsseduYL52j5ywa2UgKt3w2G4AJzD-I3ueMFebeNptCrYihj_KGmEqBQ5O3p9NDq0hGXFRiC28bhQ==';  // Admin token from InfluxDB UI
+const influxUrl = '';  // Base InfluxDB URL (Docker setup)
+const adminToken = '';  // Admin token from InfluxDB UI
 
 // Function to create an organization in InfluxDB
 export async function createOrganization(orgName) {

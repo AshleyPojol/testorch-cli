@@ -1,22 +1,20 @@
 import axios from 'axios';
 
-// Function to fetch test plans from a GitHub repository
 export async function getTestPlans() {
-  // Replace with your actual GitHub repository details
   const repoUrl = '';  
-  const githubToken = '';  // Add your GitHub token if the repo is private
+  const githubToken = ''; 
 
   try {
     const response = await axios.get(repoUrl, {
       headers: {
-        Authorization: `token ${githubToken}`  // Use GitHub token for authentication if needed
+        Authorization: `token ${githubToken}`  
       }
     });
 
-    // Filter for .xml files (assuming your test plans are .xml files)
+   
     const plans = response.data
-      .filter(file => file.name.endsWith('.xml'))  // Only include .xml files
-      .map(file => file.name.replace('.xml', '')); // Remove .xml extension for cleaner display
+      .filter(file => file.name.endsWith('.xml'))  
+      .map(file => file.name.replace('.xml', '')); 
 
     if (plans.length === 0) {
       console.log('No test plans found in the repository.');
@@ -26,6 +24,6 @@ export async function getTestPlans() {
     return plans;
   } catch (error) {
     console.error('Error fetching test plans:', error.message);
-    return [];  // Return empty array in case of error
+    return [];  
   }
 }

@@ -3,7 +3,6 @@ import axios from 'axios';
 const grafanaUrl = '';
 const grafanaApiKey = '';  
 
-// Function to create or overwrite a Grafana dashboard
 export async function createGrafanaDashboard(orgName, bucketName, testPlan) {
     const dashboardUrl = `${grafanaUrl}/api/dashboards/db`;
 
@@ -40,7 +39,7 @@ export async function createGrafanaDashboard(orgName, bucketName, testPlan) {
             ]
         },
         folderId: 0,
-        overwrite: true  // Set overwrite to true to ensure the dashboard is replaced
+        overwrite: true  
     };
 
     try {
@@ -51,10 +50,10 @@ export async function createGrafanaDashboard(orgName, bucketName, testPlan) {
             }
         });
 
-        const { uid, url } = response.data;  // Capture the generated UID and URL
+        const { uid, url } = response.data;  
         console.log(`Grafana dashboard created successfully: UID: ${uid}, URL: ${url}`);
 
-        return { uid, url };  // Return the UID and URL for further use
+        return { uid, url };  
     } catch (error) {
         console.error('Error creating Grafana dashboard:', error.response?.data || error.message);
     }
@@ -64,11 +63,11 @@ export async function createGrafanaDashboard(orgName, bucketName, testPlan) {
 export async function updateGrafanaOrgVariable(dashboardId, organizationName) {
     try {
       const response = await axios.put(
-        `${grafanaUrl}/api/dashboards/uid/${dashboardId}`,  // Update dashboard by its UID
+        `${grafanaUrl}/api/dashboards/uid/${dashboardId}`,  
         {
           dashboard: {
             variables: {
-              organization: organizationName,  // Update organization variable
+              organization: organizationName,  
             },
           },
         },
