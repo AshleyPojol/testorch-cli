@@ -1,0 +1,58 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: jmeter-master
+#   namespace: perf-platform
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: jmeter-master
+#   template:
+#     metadata:
+#       labels:
+#         app: jmeter-master
+#     spec:
+#       containers:
+#         - name: jmeter-master
+#           image: acpojol/custom-jmeter-master:latest
+#           ports:
+#             - containerPort: 60000  
+#           env:
+#             - name: GITHUB_TOKEN
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: github-token
+#                   key: GITHUB_TOKEN
+#             - name: GITHUB_REPO_URL
+#               value: ""  # Add your repo URL here
+#           command: ["/bin/bash", "-c"]
+#           args:
+#             - |
+#               # Fetch the JMX files from GitHub
+#               curl -H "Authorization: token $GITHUB_TOKEN" $GITHUB_REPO_URL | jq -r '.[] | select(.name | endswith(".xml")).download_url' | xargs -n 1 curl -O
+
+#               # Execute the JMX test plan
+#               jmeter -n -t /test-plans/burstload.xml -l /results/results.jtl
+
+#               # Keep the container alive for debugging purposes
+#               sleep 3600
+#           volumeMounts:
+#             - name: jmeter-test-plans
+#               mountPath: /test-plans
+#       volumes:
+#         - name: jmeter-test-plans
+#           emptyDir: {} 
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: jmeter-master
+#   namespace: perf-platform
+# spec:
+#   type: ClusterIP
+#   ports:
+#     - port: 60000
+#       targetPort: 60000
+#   selector:
+#     app: jmeter-master
