@@ -8,4 +8,4 @@ RUN apk update && apk add --no-cache curl jq
 RUN mkdir -p /test-plans
 
 # Set the working directory
-WORKDIR /test-plans
+WORKDIR /testplans
