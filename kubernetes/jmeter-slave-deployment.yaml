@@ -2,9 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: jmeter-slave
-  namespace: perf-platform  # Ensure it matches the namespace used by the master
+  namespace: perf-platform  
 spec:
-  replicas: 2  # Number of slave instances
+  replicas: 1  
   selector:
     matchLabels:
       app: jmeter-slave
@@ -17,10 +17,10 @@ spec:
       - name: jmeter-slave
         image: justb4/jmeter:latest
         ports:
-          - containerPort: 1099  # Default RMI port for JMeter communication
+          - containerPort: 1099  
         env:
           - name: MASTER_IP  # This is the IP address or hostname of your JMeter master
-            value: "jmeter-master.perf-platform.svc.cluster.local"  # Cluster-internal DNS name of the master
+            value: ""  # Cluster-internal DNS name of the master
         command: ["/bin/bash", "-c"]
         args:
           - |
