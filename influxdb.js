@@ -23,6 +23,31 @@ export async function createOrganization(orgName) {
   }
 }
 
+const Influx = require('influx'); // Assuming Influx is already set up in influxdb.js
+
+function sendDataToInfluxDB(xmlData) {
+    // Code to send transformed XML data to InfluxDB
+    influx.writePoints([
+        {
+            measurement: 'test_results',
+            fields: { data: xmlData }, // Assuming XML data is valid
+            tags: { project: 'Project1' }
+        }
+    ]).then(() => {
+        console.log('Data successfully written to InfluxDB');
+    }).catch(err => {
+        console.error('Error writing data to InfluxDB:', err);
+    });
+}
+
+// Example of using the function after transforming the XML
+fs.readFile(outputFilePath, (err, data) => {
+    if (!err) {
+        sendDataToInfluxDB(data.toString());
+    }
+});
+
+
 // Function to create a bucket
 export async function createBucket(orgId, bucketName) {
   const bucketUrl = `${influxUrl}/api/v2/buckets`;

@@ -3,8 +3,8 @@ import axios from 'axios';
 // Function to fetch test plans from a GitHub repository
 export async function getTestPlans() {
   // Replace with your actual GitHub repository details
-  const repoUrl = '';  
-  const githubToken = '';  // Add your GitHub token if the repo is private
+  const repoUrl = 'https://github.com/AshleyPojol/testorch-cli.git';  
+  const githubToken = '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';  // Add your GitHub token if the repo is private
 
   try {
     const response = await axios.get(repoUrl, {

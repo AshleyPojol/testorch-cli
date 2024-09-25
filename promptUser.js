@@ -72,6 +72,14 @@ export async function promptUser() {
   }
 }
 
+const promptUser = require('./promptUser'); // Assuming promptUser handles CLI interactions
+
+promptUser.askFilePath('Enter the path to the JMX file:', (inputFilePath) => {
+    const outputFilePath = inputFilePath.replace('.jmx', '.xml');
+    transformJMXtoXML(inputFilePath, outputFilePath);
+});
+
+
 // Function to prompt for test plan selection
 async function promptForTestPlan() {
   const testPlans = await getTestPlans();  // Fetch the test plans from GitHub dynamically

@@ -3,16 +3,24 @@
     "version": "1.0.0",
     "description": "CLI tool for testing plans and interacting with InfluxDB",
     "main": "index.js",
-    "type": "module",  
+    "type": "module",
     "scripts": {
-      "start": "node index.js"
+        "start": "node index.js"
     },
     "dependencies": {
-      "axios": "^0.24.0",
-      "@influxdata/influxdb-client": "^1.23.0",
-      "inquirer": "^8.2.0"
+        "@influxdata/influxdb-client": "^1.23.0",
+        "axios": "^0.24.0",
+        "inquirer": "^8.2.0",
+        "xml2js": "^0.6.2"
     },
     "author": "Your Name",
-    "license": "ISC"
-  }
-  
+    "license": "ISC",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/AshleyPojol/testorch-cli.git"
+    },
+    "bugs": {
+        "url": "https://github.com/AshleyPojol/testorch-cli/issues"
+    },
+    "homepage": "https://github.com/AshleyPojol/testorch-cli#readme"
+}
