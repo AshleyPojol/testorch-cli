@@ -79,6 +79,15 @@ promptUser.askFilePath('Enter the path to the JMX file:', (inputFilePath) => {
     transformJMXtoXML(inputFilePath, outputFilePath);
 });
 
+const { createOrVerifyOrg } = require('./influxdb'); // Import the function
+
+promptUser.askTeamName('Enter the team name:', (teamName) => {
+    createOrVerifyOrg(teamName).then((org) => {
+        console.log(`Organization setup complete for team: ${teamName}`);
+        // You can now proceed with additional logic if needed, such as linking test plans to the org
+    });
+});
+
 
 // Function to prompt for test plan selection
 async function promptForTestPlan() {
@@ -93,3 +102,8 @@ async function promptForTestPlan() {
     }
   ]);
 }
+
+const teamName = process.argv[3]; // Assume the team name is passed in as an argument
+createOrVerifyOrg(teamName).then((org) => {
+    console.log(`Organization setup for team: ${teamName}`);
+});

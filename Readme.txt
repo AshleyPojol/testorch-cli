@@ -13,3 +13,14 @@
 // Once the transformation is done, you can upload or send relevant performance data (if available) to InfluxDB
 // Ensure that the transformed .xml file contains the necessary data points
 
+// 9/26/24 Progressional Changes
+
+// added functionality to influxdb.js to handle the creation or verification of InfluxDB organizations
+// In InfluxDB, each organization groups multiple users and buckets. Assign each team to one organization
+// user will be prompted to enter the team name. The code then checks if the organization already exists in InfluxDB, it will create one if it doesn’t
+
+// updated .env file and added InfluxDB Personal Access Token: uYDU1XjK0tNkwnHx4OXeSWLm_glVOqoB4xj6ywdxvQ7GLD7Th-z0izmZEGv6DWWLizcyIAFbvdvAJ14q3IhP5w==
+
+// team creation prompt in promptUser.js added
+
+// 

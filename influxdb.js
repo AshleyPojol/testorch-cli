@@ -5,23 +5,33 @@ import { InfluxDB, Point } from '@influxdata/influxdb-client';
 const influxUrl = 'http://localhost:8086';  // Base InfluxDB URL (Docker setup)
 const adminToken = 'h_DvpQil1JsseduYL52j5ywa2UgKt3w2G4AJzD-I3ueMFebeNptCrYihj_KGmEqBQ5O3p9NDq0hGXFRiC28bhQ==';  // Admin token from InfluxDB UI
 
-// Function to create an organization in InfluxDB
-export async function createOrganization(orgName) {
-  const orgUrl = `${influxUrl}/api/v2/orgs`;
+const { InfluxDB } = require('@influxdata/influxdb-client'); // InfluxDB client library
+const token = process.env.INFLUXDB_TOKEN; // Store your InfluxDB token securely
+const orgAPI = new InfluxDB({url: 'http://localhost:8086', uYDU1XjK0tNkwnHx4OXeSWLm_glVOqoB4xj6ywdxvQ7GLD7Th-z0izmZEGv6DWWLizcyIAFbvdvAJ14q3IhP5w==}).getOrganizationsApi();
 
-  try {
-    const response = await axios.post(
-      orgUrl,
-      { name: orgName },
-      { headers: { Authorization: `Token ${adminToken}` } }  // Use adminToken here
-    );
-    console.log(`Organization '${orgName}' created with ID: ${response.data.id}`);
-    return response.data;  // Return the whole organization object, including the ID
-  } catch (error) {
-    console.error('Error creating organization:', error.response?.data || error.message);
-    return null;  // Return null if organization creation fails
-  }
+// Function to create or verify the organization for a team
+async function createOrVerifyOrg(teamName) {
+    try {
+        // Fetch list of organizations to see if the team exists
+        const orgs = await orgAPI.getOrgs();
+        const existingOrg = orgs.orgs.find(org => org.name === teamName);
+
+        if (existingOrg) {
+            console.log(`Organization for team ${teamName} already exists: ${existingOrg.name}`);
+            return existingOrg;
+        }
+
+        // If organization doesn't exist, create a new one
+        const newOrg = await orgAPI.postOrgs({ body: { name: teamName } });
+        console.log(`Created new organization for team: ${teamName}`);
+        return newOrg;
+    } catch (err) {
+        console.error(`Error creating or verifying organization for team ${teamName}:`, err);
+    }
 }
+
+module.exports = { createOrVerifyOrg };
+
 
 const Influx = require('influx'); // Assuming Influx is already set up in influxdb.js
 
