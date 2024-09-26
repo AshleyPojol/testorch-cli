@@ -7,7 +7,7 @@ const adminToken = 'h_DvpQil1JsseduYL52j5ywa2UgKt3w2G4AJzD-I3ueMFebeNptCrYihj_KG
 
 const { InfluxDB } = require('@influxdata/influxdb-client'); // InfluxDB client library
 const token = process.env.INFLUXDB_TOKEN; // Store your InfluxDB token securely
-const orgAPI = new InfluxDB({url: 'http://localhost:8086', uYDU1XjK0tNkwnHx4OXeSWLm_glVOqoB4xj6ywdxvQ7GLD7Th-z0izmZEGv6DWWLizcyIAFbvdvAJ14q3IhP5w==}).getOrganizationsApi();
+const orgAPI = new InfluxDB({url: 'http://localhost:8086', token: process.env.INFLUXDB_TOKEN}).getBucketsApi();
 
 // Function to create or verify the organization for a team
 async function createOrVerifyOrg(teamName) {
@@ -75,6 +75,35 @@ export async function createBucket(orgId, bucketName) {
     return null;  // Return null if bucket creation fails
   }
 }
+
+// Function to create or verify a bucket for the test plan
+async function createOrVerifyBucket(bucketName) {
+  try {
+      const buckets = await bucketAPI.getBuckets();
+      const existingBucket = buckets.buckets.find(bucket => bucket.name === bucketName);
+
+      if (existingBucket) {
+          console.log(`Bucket for test plan ${bucketName} already exists: ${existingBucket.name}`);
+          return existingBucket;
+      }
+
+      // If bucket doesn't exist, create a new one
+      const newBucket = await bucketAPI.postBuckets({
+          body: {
+              orgID: orgId,
+              name: bucketName,
+              retentionRules: [] // Optional retention rules can be added
+          }
+      });
+
+      console.log(`Created new bucket for test plan: ${bucketName}`);
+      return newBucket;
+  } catch (err) {
+      console.error(`Error creating or verifying bucket for test plan ${bucketName}:`, err);
+  }
+}
+
+module.exports = { createOrVerifyBucket };
 
 // Function to create a token for the new organization
 export async function createTokenForOrg(orgId, bucketId, tokenDescription) {

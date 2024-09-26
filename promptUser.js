@@ -88,6 +88,20 @@ promptUser.askTeamName('Enter the team name:', (teamName) => {
     });
 });
 
+const { createOrVerifyBucket } = require('./influxdb'); // Import the function
+
+promptUser.askTestPlan('Enter the test plan name:', (testPlanName) => {
+    const bucketName = testPlanName; // You can directly use the test plan name as the bucket name
+    createOrVerifyBucket(bucketName).then((bucket) => {
+        console.log(`Bucket setup complete for test plan: ${testPlanName}`);
+        // Continue with further actions if necessary
+    });
+});
+
+promptUser.askTestPlan = function(question, callback) {
+  // Code to ask user for the test plan name (similar to other prompt functions)
+};
+
 
 // Function to prompt for test plan selection
 async function promptForTestPlan() {

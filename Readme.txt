@@ -23,4 +23,7 @@
 
 // team creation prompt in promptUser.js added
 
-// 
+// 9/26/24 Progressional Changes
+
+// Add or modify the function to create or verify buckets in InfluxDB for each test plan configured in influxdb.js
+// Add a new prompt to ask the user for a test plan name and trigger the bucket creation logic in promptUser.js
