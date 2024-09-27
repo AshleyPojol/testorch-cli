@@ -175,3 +175,33 @@ export async function writeDataToNewOrg(testPlan, orgName, bucketName, token) {
     console.error(`Error writing to InfluxDB: ${err.message}`);
   }
 }
+
+// Function to create or verify a bucket for the project
+async function createOrVerifyProjectBucket(projectName) {
+  try {
+      const buckets = await bucketAPI.getBuckets();
+      const existingBucket = buckets.buckets.find(bucket => bucket.name === projectName);
+
+      if (existingBucket) {
+          console.log(`Bucket for project ${projectName} already exists: ${existingBucket.name}`);
+          return existingBucket;
+      }
+
+      // If bucket doesn't exist, create a new one
+      const newBucket = await bucketAPI.postBuckets({
+          body: {
+              orgID: orgId, // Use the appropriate org ID here
+              name: projectName,
+              retentionRules: [] // Optional retention rules can be added here
+          }
+      });
+
+      console.log(`Created new bucket for project: ${projectName}`);
+      return newBucket;
+  } catch (err) {
+      console.error(`Error creating or verifying bucket for project ${projectName}:`, err);
+  }
+}
+
+module.exports = { createOrVerifyProjectBucket };
+

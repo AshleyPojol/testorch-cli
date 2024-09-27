@@ -27,3 +27,8 @@
 
 // Add or modify the function to create or verify buckets in InfluxDB for each test plan configured in influxdb.js
 // Add a new prompt to ask the user for a test plan name and trigger the bucket creation logic in promptUser.js
+
+// 9/27/24 Progressional Changes
+
+// Modify or add the function to create or verify buckets in InfluxDB for each project changes added in influxdb.js
+// Add logic to prompt for the project name and link it to a bucket using the createOrVerifyProjectBucket function changes added in promptUser.js

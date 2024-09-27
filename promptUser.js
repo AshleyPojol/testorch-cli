@@ -102,6 +102,15 @@ promptUser.askTestPlan = function(question, callback) {
   // Code to ask user for the test plan name (similar to other prompt functions)
 };
 
+const { createOrVerifyProjectBucket } = require('./influxdb'); // Import the function
+
+promptUser.askProjectName('Enter the project name:', (projectName) => {
+    createOrVerifyProjectBucket(projectName).then((bucket) => {
+        console.log(`Bucket setup complete for project: ${projectName}`);
+        // Continue with further actions if necessary
+    });
+});
+
 
 // Function to prompt for test plan selection
 async function promptForTestPlan() {
