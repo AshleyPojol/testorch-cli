@@ -17,20 +17,27 @@ spec:
         - name: jmeter-master
           image: acpojol/custom-jmeter-master:latest
           ports:
-            - containerPort: 60000  
+            - containerPort: 60000
           env:
             - name: GITHUB_TOKEN
-              value: #Insert GitHub Token Here""  
+              valueFrom:
+                secretKeyRef:
+                  name: github-credentials
+                  key: GITHUB_TOKEN
             - name: GITHUB_REPO_URL
-              value: #Insert API of Github Here | PATS ""  
+              valueFrom:
+                secretKeyRef:
+                  name: github-credentials
+                  key: GITHUB_REPO_URL
           command: ["/bin/bash", "-c"]
           args:
             - |
-             # Fetch the XML files from GitHub
+              # Fetch the XML files from GitHub
+              mkdir -p /testplans && cd /testplans
               curl -L --http1.1 -H "Authorization: token $GITHUB_TOKEN" $GITHUB_REPO_URL | jq -r '.[] | select(.name | endswith(".xml")).download_url' | xargs -n 1 curl -O
 
               # Execute the JMX test plan
-              jmeter -n -t /test-plans/burstload.xml -l /results/results.jtl
+              jmeter -n -t /testplans/burstload.xml -l /results/results.jtl
 
               # Keep the container alive for debugging purposes
               sleep 3600
@@ -39,7 +46,8 @@ spec:
               mountPath: /testplans
       volumes:
         - name: jmeter-test-plans
-          emptyDir: {} 
+          emptyDir: {}
+
 ---
 apiVersion: v1
 kind: Service

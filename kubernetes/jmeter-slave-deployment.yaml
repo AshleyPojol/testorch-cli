@@ -20,7 +20,7 @@ spec:
           - containerPort: 1099  
         env:
           - name: MASTER_IP  # This is the IP address or hostname of your JMeter master
-            value: ""  # Cluster-internal DNS name of the master
+            value: "jmeter-master.perf-platform.svc.cluster.local"  # Cluster-internal DNS name of the master
         command: ["/bin/bash", "-c"]
         args:
           - |

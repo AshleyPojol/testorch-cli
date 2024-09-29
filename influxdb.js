@@ -1,9 +1,12 @@
 import axios from 'axios';
 import { InfluxDB, Point } from '@influxdata/influxdb-client';
+import dotenv from 'dotenv';
 
-// InfluxDB connection details
-const influxUrl = '';  // Base InfluxDB URL (Docker setup)
-const adminToken = '';  // Admin token from InfluxDB UI
+dotenv.config();  // Load environment variables
+
+// InfluxDB connection details using environment variables
+const influxUrl = process.env.Influx_URL;  // Base InfluxDB URL from .env
+const adminToken = process.env.Influx_API;  // Admin token from .env
 
 // Function to create an organization in InfluxDB
 export async function createOrganization(orgName) {

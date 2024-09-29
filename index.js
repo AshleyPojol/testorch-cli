@@ -1,7 +1,10 @@
+import dotenv from 'dotenv';  // Add dotenv import for environment variables
+dotenv.config();  // Load environment variables from .env
+
 import inquirer from 'inquirer';
 import { promptUser } from './promptUser.js';
 import { createOrganization, createBucket, createTokenForOrg, writeDataToInfluxDB } from './influxdb.js';
-import { createGrafanaDashboard, updateGrafanaOrgVariable } from './grafana.js';  
+import { createGrafanaDashboard, updateGrafanaOrgVariable } from './grafana.js';
 import { deployJmeterMaster, deployJmeterSlaves, ensureNamespaceExists } from './kubernetes.js';
 
 async function runTestorch() {
@@ -58,8 +61,8 @@ async function runTestorch() {
 
   if (deployK8s.deployK8s) {
     // Ensure the namespaces exist
-    await ensureNamespaceExists('perf-platform');  
-    await ensureNamespaceExists('monitoring');    
+    await ensureNamespaceExists('perf-platform');
+    await ensureNamespaceExists('monitoring');
 
     // Deploy JMeter Master and Slaves
     const jmeterMasterDeployment = await deployJmeterMaster(userInput.testPlan, userInput.organizationName);

@@ -5,13 +5,14 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-      "start": "node index.js"
+    "start": "node index.js"
   },
   "dependencies": {
-      "@influxdata/influxdb-client": "^1.23.0",
-      "@kubernetes/client-node": "^0.22.0",
-      "axios": "^0.24.0",
-      "inquirer": "^8.2.0"
+    "@influxdata/influxdb-client": "^1.23.0",
+    "@kubernetes/client-node": "^0.22.0",
+    "axios": "^0.24.0",
+    "dotenv": "^16.4.5",
+    "inquirer": "^8.2.0"
   },
   "author": "Hi",
   "license": "ISC"

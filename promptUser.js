@@ -1,8 +1,7 @@
 import inquirer from 'inquirer';
-import { getTestPlans } from './testPlans.js';  // Assuming you have a function to fetch test plans
+import { getTestPlans } from './testPlans.js';  
 
 export async function promptUser() {
-  // Ask if the user wants to use existing setup or create a new one
   const { useExistingSetup } = await inquirer.prompt([
     {
       type: 'confirm',

@@ -1,7 +1,10 @@
 import axios from 'axios';
+import dotenv from 'dotenv';
 
-const grafanaUrl = '';
-const grafanaApiKey = '';  
+dotenv.config();
+
+const grafanaUrl = process.env.Grafana_URL;
+const grafanaApiKey = process.env.Grafana_API;  
 
 export async function createGrafanaDashboard(orgName, bucketName, testPlan) {
     const dashboardUrl = `${grafanaUrl}/api/dashboards/db`;

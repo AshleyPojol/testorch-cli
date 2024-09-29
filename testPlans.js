@@ -1,9 +1,11 @@
 import axios from 'axios';
+import inquirer from 'inquirer'; // Keep inquirer here for test plan uploads
 
+const repoUrl = 'https://api.github.com/repos/AshleyPojol/testplans/contents/';
+const githubToken = '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'; // Replace with your actual GitHub token
+
+// Function to fetch test plans from the GitHub repository
 export async function getTestPlans() {
-  const repoUrl = '';  
-  const githubToken = ''; 
-
   try {
     const response = await axios.get(repoUrl, {
       headers: {
@@ -11,10 +13,9 @@ export async function getTestPlans() {
       }
     });
 
-   
     const plans = response.data
-      .filter(file => file.name.endsWith('.xml'))  
-      .map(file => file.name.replace('.xml', '')); 
+      .filter(file => file.name.endsWith('.xml'))  // Only include .xml files
+      .map(file => file.name.replace('.xml', '')); // Remove .xml extension for cleaner display
 
     if (plans.length === 0) {
       console.log('No test plans found in the repository.');
@@ -25,5 +26,28 @@ export async function getTestPlans() {
   } catch (error) {
     console.error('Error fetching test plans:', error.message);
     return [];  
+  }
+}
+
+// Function to prompt for file upload and validate it as XML or JMX
+export async function promptForTestPlanUpload() {
+  const { testPlanFile } = await inquirer.prompt({
+    type: 'input',
+    name: 'testPlanFile',
+    message: 'Upload a new test plan (XML or JMX file):'
+  });
+
+  // Validate file extension
+  if (testPlanFile.endsWith('.xml')) {
+    console.log('XML test plan uploaded successfully.');
+    return testPlanFile;
+  } else if (testPlanFile.endsWith('.jmx')) {
+    // Automatically change the extension from .jmx to .xml
+    const xmlFile = testPlanFile.replace('.jmx', '.xml');
+    console.log(`JMX file detected. The file extension will be changed to: ${xmlFile}`);
+    return xmlFile;
+  } else {
+    console.log('Invalid file format. Only XML and JMX files are allowed.');
+    return promptForTestPlanUpload();  // Retry if the file format is invalid
   }
 }
