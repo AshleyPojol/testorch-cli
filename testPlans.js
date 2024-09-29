@@ -1,8 +1,6 @@
 import axios from 'axios';
 import inquirer from 'inquirer'; // Keep inquirer here for test plan uploads
 
-const repoUrl = 'https://api.github.com/repos/AshleyPojol/testplans/contents/';
-const githubToken = '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'; // Replace with your actual GitHub token
 
 // Function to fetch test plans from the GitHub repository
 export async function getTestPlans() {
