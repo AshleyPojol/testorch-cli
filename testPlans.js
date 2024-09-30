@@ -1,9 +1,13 @@
 import axios from 'axios';
 import inquirer from 'inquirer'; // Keep inquirer here for test plan uploads
+import dotenv from 'dotenv';
 
+dotenv.config();
 
-// Function to fetch test plans from the GitHub repository
 export async function getTestPlans() {
+  const repoUrl = process.env.GitHub_URL;         // Use environment variable for GitHub URL
+  const githubToken = process.env.GitHub_API;     // Use environment variable for GitHub API token
+
   try {
     const response = await axios.get(repoUrl, {
       headers: {
@@ -11,6 +15,7 @@ export async function getTestPlans() {
       }
     });
 
+    // Filter and map the response to extract only the XML file names
     const plans = response.data
       .filter(file => file.name.endsWith('.xml'))  // Only include .xml files
       .map(file => file.name.replace('.xml', '')); // Remove .xml extension for cleaner display
@@ -20,7 +25,7 @@ export async function getTestPlans() {
       return [];
     }
 
-    return plans;
+    return plans;  // Return the filtered list of test plan names
   } catch (error) {
     console.error('Error fetching test plans:', error.message);
     return [];  
